@@ -5,20 +5,59 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PTZ bediening</title>
-    <script src="ptz.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        input {
+            text-align: center;
+            padding: .5em;
+            font-size: 20px;
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
 </head>
 <body>
     <h1>PTZ</h1>
     <h2>Camera 1</h2>
-    <form action="#" onsubmit="setPreset()">
-        <input type="hidden" id="host" value="192.168.0.101">
-        <input type="number" id="preset">
+    <form action="#" data-host="192.168.0.101">
+        <input type="number" id="input_1" name="preset" min="1" max="100" step="1" placeholder="000">
     </form>
-
+    
     <h2>Camera 2</h2>
-    <form action="#" onsubmit="setPreset()">
-        <input type="hidden" id="host" value="192.168.0.102">
-        <input type="number" id="preset">
+    <form action="#" data-host="192.168.0.102">
+        <input type="number" id="input_2" name="preset" min="1" max="100" step="1" placeholder="000">
     </form>
+    <script>
+        $(document).ready(function() {
+            $('form').submit(function(e) {
+                e.preventDefault();
+                let preset = $(this).serializeArray()[0].value;
+                let host = $(this).data('host');
+                $(this).find("input").select();
+                fetch("http://" + host + "/cgi-bin/camctrl?preset=" + preset);
+            });
+        });
+        document.body.onkeydown = function(e) {
+            if(e.keyCode == 111) {
+                $('#input_1').select();
+            }
+            if(e.keyCode == 106) {
+                $('#input_2').select();
+            }
+        }
+    </script>
 </body>
 </html>
