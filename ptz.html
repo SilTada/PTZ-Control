@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTZ bediening</title>
+    <script src="ptz.js"></script>
+</head>
+<body>
+    <h1>PTZ</h1>
+    <h2>Camera 1</h2>
+    <form action="#" onsubmit="setPreset()">
+        <input type="hidden" id="host" value="192.168.0.101">
+        <input type="number" id="preset">
+    </form>
+
+    <h2>Camera 2</h2>
+    <form action="#" onsubmit="setPreset()">
+        <input type="hidden" id="host" value="192.168.0.102">
+        <input type="number" id="preset">
+    </form>
+</body>
+</html>
