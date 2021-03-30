@@ -13,6 +13,8 @@
             justify-content: center;
             align-items: center;
             font-family: Arial, Helvetica, sans-serif;
+            background-color: rgb(22, 22, 30);
+            color: white;
         }
         input {
             text-align: center;
@@ -27,6 +29,23 @@
         input[type=number] {
             -moz-appearance: textfield;
         }
+        div {
+            font-size: small;
+            text-align: center;
+            margin-top: 2em;
+            background-color: rgba(255, 255, 255, .05);
+            padding: 1em 2em;
+            border-radius: 10px;
+            border: 1px solid darkgray;
+        }
+        span {
+            background-color: black;
+            padding: .8em;
+            border: 1px darkgray solid;
+            border-radius: 5px;
+            display: inline-block;
+            margin-right: .5em;
+        }
     </style>
 </head>
 <body>
@@ -40,6 +59,10 @@
     <form action="#" data-host="192.168.0.102">
         <input type="number" id="input_2" name="preset" min="1" max="100" step="1" placeholder="000">
     </form>
+    <div>
+        <p><span>&larr;</span> <span>&rarr;</span> wisselen tussen camera's</p>
+        <p><span>&nbsp;-&nbsp;</span> velden leegmaken</p>
+    </div>
     <script>
         $(document).ready(function() {
             $('form').submit(function(e) {
@@ -50,12 +73,15 @@
                 fetch("http://" + host + "/cgi-bin/camctrl?preset=" + preset);
             });
         });
-        document.body.onkeydown = function(e) {
-            if(e.keyCode == 111) {
+        document.body.onkeyup = function(e) {
+            if(e.keyCode == 37) {
                 $('#input_1').select();
             }
-            if(e.keyCode == 106) {
+            if(e.keyCode == 39) {
                 $('#input_2').select();
+            }
+            if(e.keyCode == 109) {
+                $('input').val('');
             }
         }
     </script>
