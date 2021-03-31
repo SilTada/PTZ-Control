@@ -29,27 +29,66 @@
         input[type=number] {
             -moz-appearance: textfield;
         }
-        div {
+        .overlay {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, .5);
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        table {
             font-size: small;
-            text-align: center;
             margin-top: 2em;
             background-color: rgba(255, 255, 255, .05);
-            padding: 1em 2em;
+            padding: 1.5em;
             border-radius: 10px;
             border: 1px solid darkgray;
+        }
+        td:first-child {
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 1em;
+        }
+        tr:not(:last-child) td {
+            padding-bottom: .8em;
         }
         span {
             background-color: black;
             padding: .8em;
+            margin-right: .5em;
             border: 1px darkgray solid;
             border-radius: 5px;
-            display: inline-block;
-            margin-right: .5em;
+            display: flex;
+            width: 1.5em;
+            height: 1.5em;
+            justify-content: center;
+            align-items: center;
+        }
+        span.space {
+            width: 100%;
+        }
+        a {
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 1em;
+            color: lightgray;
+            background-color: rgba(0, 0, 0, .5);
+            border-radius: 0 0 0 5px;
+            text-decoration: none;
+        }
+        a:hover {
+            color: white;
         }
     </style>
 </head>
 <body>
-    <h1>PTZ</h1>
+    <h1>PTZ Control</h1>
     <h2>Camera 1</h2>
     <form action="#" data-host="192.168.0.101">
         <input type="number" id="input_1" name="preset" min="1" max="100" step="1" placeholder="000">
@@ -59,9 +98,24 @@
     <form action="#" data-host="192.168.0.102">
         <input type="number" id="input_2" name="preset" min="1" max="100" step="1" placeholder="000">
     </form>
-    <div>
-        <p><span>&larr;</span> <span>&rarr;</span> wisselen tussen camera's</p>
-        <p><span>&nbsp;-&nbsp;</span> velden leegmaken</p>
+    <a href="#" id="info">Shortcuts</a>
+    <div class="overlay" style="display: none;">
+        <table>
+            <tbody>
+                <tr>
+                    <td><span>&larr;</span> <span>&rarr;</span></td>
+                    <td>wisselen van camera</td>
+                </tr>
+                <tr>
+                    <td><span>&nbsp;-&nbsp;</span></td>
+                    <td>velden leegmaken</td>
+                </tr>
+                <tr>
+                    <td><span class="space">spatie</span></td>
+                    <td>shortcuts</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <script>
         $(document).ready(function() {
@@ -71,6 +125,12 @@
                 let host = $(this).data('host');
                 $(this).find("input").select();
                 fetch("http://" + host + "/cgi-bin/camctrl?preset=" + preset);
+            });
+            $("#info").click(function(){
+                $(".overlay").fadeIn('fast');
+            });
+            $(".overlay").click(function(){
+                $(".overlay").fadeOut('fast');
             });
         });
         document.body.onkeyup = function(e) {
@@ -82,6 +142,9 @@
             }
             if(e.keyCode == 109) {
                 $('input').val('');
+            }
+            if(e.keyCode == 32) {
+                $(".overlay").fadeToggle('fast');
             }
         }
     </script>
