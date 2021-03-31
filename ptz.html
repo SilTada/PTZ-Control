@@ -20,6 +20,8 @@
             text-align: center;
             padding: .5em;
             font-size: 20px;
+            border-radius: 5px;
+            border: 1px solid rgba(0, 0, 0, .5);
         }
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
@@ -43,12 +45,14 @@
         }
         table {
             font-size: small;
-            margin-top: 2em;
-            background-color: rgba(255, 255, 255, .05);
+        }
+        .overlay > * {
+            background-color: rgb(22, 22, 30);
             padding: 1.5em;
             border-radius: 10px;
             border: 1px solid darkgray;
         }
+
         td:first-child {
             display: flex;
             justify-content: flex-end;
@@ -72,18 +76,23 @@
         span.space {
             width: 100%;
         }
-        a {
+        nav {
             position: fixed;
             top: 0;
             right: 0;
             padding: 1em;
-            color: lightgray;
             background-color: rgba(0, 0, 0, .5);
             border-radius: 0 0 0 5px;
+        }
+        nav a {
+            color: lightgray;
             text-decoration: none;
         }
-        a:hover {
+        nav a:hover {
             color: white;
+        }
+        form input#name {
+            margin-top: 4em;
         }
     </style>
 </head>
@@ -98,17 +107,27 @@
     <form action="#" data-host="192.168.0.102">
         <input type="number" id="input_2" name="preset" min="1" max="100" step="1" placeholder="000">
     </form>
-    <a href="#" id="info">Shortcuts</a>
+    
+    <form>
+        <input type="text" id="name" name="name" placeholder="Naam van de persoon?" autocomplete="off">
+    </form>
+    <nav>
+        <a href="#" id="info">Shortcuts</a>
+    </nav>
     <div class="overlay" style="display: none;">
-        <table>
+        <table style="display: none;">
             <tbody>
                 <tr>
                     <td><span>&larr;</span> <span>&rarr;</span></td>
                     <td>wisselen van camera</td>
                 </tr>
                 <tr>
-                    <td><span>&nbsp;-&nbsp;</span></td>
+                    <td><span>-</span></td>
                     <td>velden leegmaken</td>
+                </tr>
+                <tr>
+                    <td><span>+</span></td>
+                    <td>lijst met namen </td>
                 </tr>
                 <tr>
                     <td><span class="space">spatie</span></td>
@@ -116,21 +135,39 @@
                 </tr>
             </tbody>
         </table>
+        <pre style="display: none;">
+        </pre>
     </div>
     <script>
+
         $(document).ready(function() {
+            $('pre').html(JSON.stringify(localStorage));
             $('form').submit(function(e) {
                 e.preventDefault();
+                if($(this).data('host')) {
+                    let preset = $(this).serializeArray()[0].value;
+                    let host = $(this).data('host');
+                    $(this).find("input").select();
+                    fetch("http://" + host + "/cgi-bin/camctrl?preset=" + preset);
+                }
+            });
+            $('input:not(#name)').change(function(){
                 let preset = $(this).serializeArray()[0].value;
-                let host = $(this).data('host');
-                $(this).find("input").select();
-                fetch("http://" + host + "/cgi-bin/camctrl?preset=" + preset);
+                $('input#name').attr('data-preset', preset);
+                if(localStorage.getItem(preset)) {
+                    $('input#name').val(localStorage.getItem(preset));
+                } else {
+                    $('input#name').val('');
+                }
+            });
+            $('input#name').change(function(){
+                if($(this).data('preset')) {
+                    localStorage.setItem($(this).attr('data-preset'), $(this).val());
+                    $('pre').html(JSON.stringify(localStorage));
+                }
             });
             $("#info").click(function(){
-                $(".overlay").fadeIn('fast');
-            });
-            $(".overlay").click(function(){
-                $(".overlay").fadeOut('fast');
+                $(".overlay, table").fadeIn('fast');
             });
         });
         document.body.onkeyup = function(e) {
@@ -143,8 +180,14 @@
             if(e.keyCode == 109) {
                 $('input').val('');
             }
+            if(e.keyCode == 107) {
+                $(".overlay, pre").fadeToggle('fast');
+            }
             if(e.keyCode == 32) {
-                $(".overlay").fadeToggle('fast');
+                $(".overlay, table").fadeToggle('fast');
+            }
+            if(e.keyCode == 27) {
+                $(".overlay, .overlay > *").fadeOut('fast');
             }
         }
     </script>
